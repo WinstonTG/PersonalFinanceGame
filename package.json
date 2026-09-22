@@ -1,0 +1,12 @@
+{
+  "name": "personal-finance-game-ui",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test:ui": "node --test web/simulation.test.js",
+    "test:e2e": "playwright test web/ui.e2e.spec.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.63.0"
+  }
+}

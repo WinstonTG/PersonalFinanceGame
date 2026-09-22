@@ -23,7 +23,21 @@ simulation engine.
 
 ```bash
 python -m pytest
+npm run test:ui
+npm run test:e2e
 ```
 
 Randomness can be replayed by passing a seeded `random.Random` instance to
 `run_simulation`.
+
+## Try the UI
+
+Start the browser app from the repository root:
+
+```bash
+python -m http.server 8000 --directory web
+```
+
+Then open `http://localhost:8000`. Players can name a plan, set fun spending
+for each month, choose a replay seed, and run the year to see ending savings,
+average happiness, quality of life, events, and month-by-month details.

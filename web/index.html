@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#081b1a">
+    <title>Money Moves — Personal Finance Game</title>
+    <link rel="stylesheet" href="./styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <a class="brand" href="./">MONEY <span>MOVES</span></a>
+        <div class="topbar-note"><span class="status-dot"></span> Year one simulator</div>
+      </header>
+      <section class="hero">
+        <div class="eyebrow">YOUR FIRST YEAR · 12 MONTHS</div>
+        <h1>Make your money<br><em>move.</em></h1>
+        <p class="hero-copy">You start with $3,000 in the bank. Build a plan that protects your future without forgetting to live a little.</p>
+        <div class="starting-strip"><span>STARTING SAVINGS</span><strong>$3,000</strong><span class="strip-divider"></span><span>MONTHLY BASICS</span><strong>$1,400</strong></div>
+      </section>
+
+      <form id="plan-form" novalidate>
+        <section class="panel plan-panel">
+          <div class="section-heading">
+            <div><span class="step">01</span><h2>Build your plan</h2></div>
+            <p>Choose how much you’ll set aside for fun each month. Your essentials are already accounted for.</p>
+          </div>
+          <div class="plan-meta">
+            <label>PLAN NAME<input id="plan-name" type="text" placeholder="e.g. Balanced start" maxlength="40"></label>
+            <label>REPLAY SEED<input id="seed" type="number" value="42" min="1" step="1"></label>
+            <div class="meta-note"><span class="mini-icon">↻</span> Same seed = same surprises</div>
+          </div>
+          <div id="months-grid" class="months-grid"></div>
+          <div class="plan-footer">
+            <div><span class="footer-label">HINT</span><span class="hint">$200/month keeps your quality of life steady.</span></div>
+            <button class="primary-button" type="submit">Run my simulation <span>→</span></button>
+          </div>
+          <p id="form-error" class="error-message" hidden></p>
+        </section>
+      </form>
+
+      <section id="results" class="results" hidden>
+        <div class="results-heading"><div><div class="eyebrow">SIMULATION COMPLETE</div><h2 id="result-plan-name">Your plan</h2></div><span id="event-count" class="event-pill"></span></div>
+        <div class="score-grid">
+          <article class="score-card savings-card"><span class="card-label">ENDING SAVINGS</span><strong id="ending-savings">$0</strong><span class="card-detail">after 12 months</span></article>
+          <article class="score-card"><span class="card-label">AVERAGE HAPPINESS</span><strong id="average-happiness">0 pts</strong><span class="card-detail">your monthly average</span></article>
+          <article class="score-card quality-card"><span class="card-label">QUALITY OF LIFE</span><strong id="quality-value">0%</strong><div class="quality-track"><span id="quality-bar"></span></div><span class="card-detail">50% is a neutral year</span></article>
+        </div>
+        <div id="empty-state" hidden></div>
+        <div class="table-panel">
+          <div class="table-heading"><div><span class="step">02</span><h2>Read your year</h2></div><p>Every month is a new tradeoff. Income varies, and luck has a seat at the table.</p></div>
+          <div class="table-scroll"><table><thead><tr><th>MONTH</th><th>WORK</th><th>IN</th><th>FUN</th><th>SAVINGS</th><th>HAPPINESS</th><th>NOTES</th></tr></thead><tbody id="month-results"></tbody></table></div>
+        </div>
+      </section>
+      <footer><span>Money Moves / A personal finance game</span><span>Small choices. Big freedom.</span></footer>
+    </main>
+    <script type="module" src="./app.js"></script>
+  </body>
+</html>
+
