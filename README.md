@@ -65,4 +65,30 @@ Run it with:
 python -m finance_game.score submissions.csv
 ```
 
-Malformed rows produce an explicit error instead of being silently skipped.
+Dollar signs and spaces in the numbers are tolerated. Every well-formed row is
+scored; malformed rows are listed under `COULD NOT SCORE` at the bottom with the
+name and the reason, so a typo can be fixed in the CSV and the scorer rerun
+without losing the rest of the leaderboard.
+
+## Running it at a meeting
+
+Participants do not get the simulator. They get a one-page case study with a
+copy-paste prompt that makes their AI end its answer with two lines:
+
+```
+INVEST: <one number, 0 to 500>
+FUN: <twelve numbers, 0 to 400, comma separated>
+```
+
+They enter those in a Google Form with these exact question titles, which the
+scorer matches on:
+
+| Question | Type |
+| --- | --- |
+| `Name` | Short answer |
+| `Monthly auto-invest` | Short answer, number 0 to 500 |
+| `Fun by month` | Short answer, twelve comma-separated numbers |
+| `Your plan` | Paragraph, the pasted AI answer (ignored by the scorer) |
+
+Download the responses as CSV from the form's Responses tab and run the scorer
+on it. Everyone is scored against the same hidden shared year.
