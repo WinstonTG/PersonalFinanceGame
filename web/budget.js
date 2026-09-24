@@ -4,6 +4,17 @@ const currency = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}
 const money = value => currency.format(value);
 const range = (low,high) => money(low)+' – '+money(high);
 const storageKey = 'finance-budget-v1';
+// Static hosting uses PDF hand-in. Only a submission-capable server opts in.
+let submissionsEnabled = false;
+async function checkSubmissionSupport() {
+  try {
+    const response = await fetch('./deployment.json', {cache:'no-store', signal:AbortSignal.timeout(5000)});
+    if (!response.ok || (await response.json()).submissions !== true) return;
+    submissionsEnabled = true;
+    $('submit-document').hidden = false;
+    $('submission-help').textContent = 'Submit sends your name and budget to this classroom server. A receipt confirms it was saved. You can also save a PDF and send it to your instructor.';
+  } catch { /* Offline or static hosting: PDF/JSON exports remain available. */ }
+}
 let doc = blankDocument(), current = 0;
 try {
   const saved = JSON.parse(localStorage.getItem(storageKey));
@@ -91,6 +102,7 @@ $('print-document').onclick=()=>checked(()=>{
   });window.print();
 });
 $('submit-document').onclick=async()=>{
+  if (!submissionsEnabled) return;
   const button=$('submit-document');
   try {
     validateDocument(doc);button.disabled=true;message('Submitting…');
@@ -102,3 +114,4 @@ $('submit-document').onclick=async()=>{
   } catch(error){message('Not submitted: '+error.message);} finally{button.disabled=false;}
 };
 render();
+checkSubmissionSupport();

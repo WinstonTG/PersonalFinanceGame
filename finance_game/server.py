@@ -23,6 +23,12 @@ class Handler(SimpleHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def do_GET(self):
+        if self.path == '/deployment.json':
+            self.respond(200, {'submissions': True})
+            return
+        super().do_GET()
+
     def do_POST(self):
         if self.path != '/api/documents':
             self.respond(404, {'error': 'Not found'})

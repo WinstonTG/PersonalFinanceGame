@@ -3,6 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "node scripts/build-web.mjs",
     "test:ui": "node --test web/simulation.test.js web/budget-model.test.js",
     "test:e2e": "playwright test"
   },

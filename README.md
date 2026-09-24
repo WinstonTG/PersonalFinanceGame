@@ -1,5 +1,41 @@
 # Personal Finance Game
 
+## Hosting the classroom game on Vercel
+
+Use the repository root as Vercel's **Root Directory** (not `web`). The committed
+`vercel.json` selects **Other**, builds with `npm run build`, and publishes only
+`dist`. No environment variables, Python service or database are required.
+Make sure the deployed branch includes these changes (`fix/meeting-scorer`).
+Redeploy after changing the settings or use the deployment created by the Git push.
+The configuration follows [Vercel's static configuration reference](https://vercel.com/docs/project-configuration/vercel-json).
+
+- `/` opens the practice game; `/budget.html` opens the student workbook.
+- Students save a PDF and send it using your normal class hand-in method.
+  Online direct submission is deliberately unavailable; the site is not a hosted inbox.
+- Drafts live in the current browser/site only. A different device, private browsing,
+  clearing storage, or a different preview URL will not carry them over. Download
+  the completed JSON plan as a backup; it can be reopened in the workbook.
+- The private grader stays on your computer. Grader code, databases, tests and
+  repository files are excluded from the public build. No grading secrets are needed online.
+- Keep using fictional game data. No login or sensitive financial information is needed.
+
+Quick check before class: open the public URL in an incognito window, visit
+`/budget.html`, fill all 12 months, save a PDF and import it into your local grader.
+If Vercel asks students to log in, review your deployment's access settings before
+sharing the link. Share the public app URL, not the `vercel.com` dashboard URL.
+
+Local production-output check:
+
+```sh
+npm run build
+python -m http.server 8003 --bind 127.0.0.1 --directory dist
+```
+
+The build copies only explicitly allowed student assets. Response headers in
+`vercel.json` prevent framing/content sniffing and require revalidation of assets
+so updated rules are not held in a long-lived browser cache. Local static preview
+does not emulate Vercel's headers; verify those on the deployed URL.
+
 ## Private instructor PDF grader
 
 Students send you the PDF exported by their workbook. Start the separate,
