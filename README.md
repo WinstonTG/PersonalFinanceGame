@@ -3,11 +3,21 @@
 ## Hosting the classroom game on Vercel
 
 Use the repository root as Vercel's **Root Directory** (not `web`). The committed
-`vercel.json` selects **Other**, builds with `npm run build`, and publishes only
-`dist`. No environment variables, Python service or database are required.
+`vercel.json` explicitly selects `@vercel/static-build` for `package.json`, runs
+`npm run build`, and publishes only `dist`. This prevents the local grader's
+`pyproject.toml` from being selected as a Python web application. No environment
+variables, Python service or database are required.
 Make sure the deployed branch includes these changes (`fix/meeting-scorer`).
 Redeploy after changing the settings or use the deployment created by the Git push.
 The configuration follows [Vercel's static configuration reference](https://vercel.com/docs/project-configuration/vercel-json).
+
+If a previous deployment failed with “No python entrypoint found,” deploy the
+newest commit on this branch, not a redeployment of the old failing commit.
+Keep the Root Directory at the repository root and Framework Preset at Other.
+The explicit `builds` setting is Vercel's legacy override, used intentionally here
+to prevent Python auto-detection in this mixed Python/static repository. A warning
+that project build settings are ignored is expected; the builder configuration
+above controls the build. Do not add a Python web entrypoint for the local grader.
 
 - `/` opens the practice game; `/budget.html` opens the student workbook.
 - Students save a PDF and send it using your normal class hand-in method.

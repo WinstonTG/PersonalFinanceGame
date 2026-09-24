@@ -7,8 +7,10 @@ test('production output contains only public student assets',async({request})=>{
   const names=await readdir('dist');
   expect(names.sort()).toEqual(['index.html','styles.css','app.js','simulation.js','budget.html','budget.css','budget.js','budget-model.js','deployment.json'].sort());
   const config=JSON.parse(await readFile('vercel.json','utf8'));
-  expect(config.outputDirectory).toBe('dist');
-  expect(config.buildCommand).toBe('npm run build');
+  expect(config.builds).toEqual([{
+    src:'package.json',use:'@vercel/static-build',
+    config:{distDir:'dist',buildCommand:'npm run build',framework:null},
+  }]);
   expect(config.headers[0].headers).toContainEqual({key:'X-Content-Type-Options',value:'nosniff'});
   for(const path of ['/grader_web/index.html','/finance_game/grader.py','/submissions.sqlite3','/.env','/web/grader.e2e.spec.js']){
     expect((await request.get(origin+path)).status()).toBe(404);

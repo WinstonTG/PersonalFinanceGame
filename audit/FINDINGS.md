@@ -30,6 +30,27 @@
 
 ## Scope decisions
 
+### DEPLOY-02 — Python builder selected for a static student app
+
+- Severity: medium; confidence high that Python was selected (user's exact build
+  error). Whether stale deployment settings/commit or auto-detection caused that
+  selection is unverified without deployment logs.
+- Locations: `vercel.json:4`, `pyproject.toml:5`, `web/hosting.e2e.spec.js:10`.
+- Trigger/impact: Vercel invokes Python entrypoint discovery; this repository has
+  a local CLI grader, not an ASGI/WSGI app; deployment fails before publication.
+- Prior safeguard: framework null + output directory only; the reported remote
+  failure demonstrates local static-server tests did not validate builder selection.
+- Fix: explicitly build only package.json with @vercel/static-build and publish
+  dist. Keep Python packaging untouched. Legacy builder override is intentional;
+  Vercel documents that explicit builds include only their outputs.
+- Regression: require the single static builder and its build/output settings;
+  rerun build and existing static/public-boundary tests.
+- Status: validated from deployment error; fixed; local verification passed:
+  npm build, 8 JavaScript tests, 9 browser tests and git diff --check. Remote
+  deployment confirmation remains pending; local checks do not run Vercel itself.
+- Residual risk: remote deployment success must still be confirmed; an old commit
+  redeploy will not include this fix. Rollback: revert this targeted config commit.
+
 - No claim that instructor data is currently exposed on Vercel: deployed URL and
   dashboard configuration are not available. Restricting public output is preventive.
 - No new accounts, database, paid services, scoring changes or dependency upgrades.
