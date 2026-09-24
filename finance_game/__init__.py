@@ -8,6 +8,15 @@ from .engine import (
     SimulationState,
     run_simulation,
     rank_simulations,
+    fun_happiness,
+)
+from .submissions import (
+    PlanSubmission,
+    ScoredSubmission,
+    SubmissionFormatError,
+    parse_submission_rows,
+    read_submissions_csv,
+    score_submissions,
 )
 
 __all__ = [
@@ -18,5 +27,11 @@ __all__ = [
     "SimulationState",
     "run_simulation",
     "rank_simulations",
+    "fun_happiness",
+    "PlanSubmission",
+    "ScoredSubmission",
+    "SubmissionFormatError",
+    "parse_submission_rows",
+    "read_submissions_csv",
+    "score_submissions",
 ]
-
