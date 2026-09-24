@@ -1,5 +1,20 @@
 # Personal Finance Game
 
+## Private instructor PDF grader
+
+Students send you the PDF exported by their workbook. Start the separate,
+authenticated, local-only grader with:
+
+```sh
+python -m pip install pypdf==6.19.0
+python -m finance_game.grader
+```
+
+Import a PDF, verify its figures, and simulate one month per click. Grades and
+progress persist locally; the final graded PDF includes the score. See
+[the grader guide](docs/private-grader.md) for access, supported PDFs, detailed
+budget rules and exactly how misfortunes are calculated.
+
 ## Student budget documents
 
 Start the submission-capable app from the repository root:

@@ -73,6 +73,7 @@ $('import-document').onchange=async e=>{
 };
 $('print-document').onclick=()=>checked(()=>{
   const root=$('print-budget');root.replaceChildren();
+  element('p','Budget document v1',root);
   element('h1',doc.title,root);element('p','Student: '+doc.name+' · 12-month budget forecast · Starting cash: $3,000',root);
   const rows=forecast(doc);
   doc.months.forEach((m,i)=>{

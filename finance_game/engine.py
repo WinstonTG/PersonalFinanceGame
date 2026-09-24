@@ -88,6 +88,9 @@ class MonthResult:
     missed_rent: bool
     missed_other_expenses: bool
     food_shortage: bool
+    required_rent: float = 1000.0
+    required_other_expenses: float = 400.0
+    bad_fortune_cost: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -118,14 +121,15 @@ def _validate_config(config: GameConfig) -> None:
         raise ValueError("fun_happiness_decay must be positive")
 
 
-def run_simulation(
+def iterate_simulation(
     fun_allocations: Sequence[float],
     investment_amount: float = 0.0,
     *,
     config: GameConfig | None = None,
     rng: random.Random | None = None,
     seed: int = SHARED_SEED,
-) -> SimulationResult:
+    monthly_budgets: Sequence[dict] | None = None,
+):
     """Run one player's 12-month plan against one reproducible shared year.
 
     Bills are paid before investing, investing is capped by available cash, and
@@ -143,9 +147,19 @@ def run_simulation(
         raise ValueError(f"investment_amount must be between 0 and {config.max_investment:g}")
 
     state = SimulationState(savings=config.starting_savings)
-    results: list[MonthResult] = []
+    if monthly_budgets is not None:
+        from .documents import validate_document
+        monthly_budgets = validate_document({
+            'version': 1, 'name': 'Grading', 'title': 'Budget', 'months': list(monthly_budgets),
+        })['months']
 
     for month, requested_fun in enumerate(fun_allocations, start=1):
+        budget = monthly_budgets[month - 1] if monthly_budgets is not None else None
+        requested_investment = budget['investment'] if budget else investment_amount
+        if budget:
+            requested_fun = budget['fun']
+        required_rent = max(config.rent, budget['rent']) if budget else config.rent
+        required_other = max(config.other_expenses, sum(budget[k] for k in ('food', 'utilities', 'transport', 'personal'))) if budget else config.other_expenses
         hours = rng.randint(config.min_hours_per_week, config.max_hours_per_week)
         job_lost = state.job_lost_this_month
         income = 0.0 if job_lost else config.hourly_wage * hours * WEEKS_PER_MONTH
@@ -156,25 +170,27 @@ def run_simulation(
         state.savings += gifts
 
         bad_fortune: str | None = None
+        bad_fortune_cost = 0.0
         if (
             state.bad_fortunes_seen < config.fortune.max_bad_fortunes
             and rng.random() < config.fortune.bad_fortune_chance
         ):
             state.bad_fortunes_seen += 1
+            bad_fortune_cost = min(state.savings, config.fortune.bad_fortune_money_loss)
             state.savings = max(0.0, state.savings - config.fortune.bad_fortune_money_loss)
             bad_fortune = "bad_fortune"
             if not job_lost and rng.random() < config.fortune.job_loss_chance:
                 state.job_lost_this_month = True
                 bad_fortune = "job_loss_next_month"
 
-        rent_paid = min(state.savings, config.rent)
+        rent_paid = min(state.savings, required_rent)
         state.savings -= rent_paid
-        other_expenses_paid = min(state.savings, config.other_expenses)
+        other_expenses_paid = min(state.savings, required_other)
         state.savings -= other_expenses_paid
-        missed_rent = rent_paid < config.rent
-        missed_other_expenses = other_expenses_paid < config.other_expenses
+        missed_rent = rent_paid < required_rent
+        missed_other_expenses = other_expenses_paid < required_other
 
-        investment_amount_for_month = min(state.savings, investment_amount)
+        investment_amount_for_month = min(state.savings, requested_investment)
         state.savings -= investment_amount_for_month
         state.investment_balance += investment_amount_for_month
 
@@ -193,14 +209,13 @@ def run_simulation(
             happiness_change -= config.fortune.bad_fortune_happiness_loss
         state.happiness += happiness_change
 
-        results.append(
-            MonthResult(
+        yield MonthResult(
                 month=month,
                 hours_per_week=hours,
                 income=income,
                 rent_paid=rent_paid,
                 other_expenses_paid=other_expenses_paid,
-                requested_investment=investment_amount,
+                requested_investment=requested_investment,
                 investment_amount=investment_amount_for_month,
                 investment_balance=state.investment_balance,
                 requested_fun=requested_fun,
@@ -214,18 +229,29 @@ def run_simulation(
                 missed_rent=missed_rent,
                 missed_other_expenses=missed_other_expenses,
                 food_shortage=missed_other_expenses,
+                required_rent=required_rent,
+                required_other_expenses=required_other,
+                bad_fortune_cost=bad_fortune_cost,
             )
-        )
 
+
+def summarize_months(results: Sequence[MonthResult]) -> SimulationResult:
+    if len(results) != MONTHS_IN_YEAR:
+        raise ValueError('A final score requires all 12 months.')
     total_happiness = sum(month.happiness_change for month in results)
     return SimulationResult(
         months=tuple(results),
-        ending_savings=state.savings,
-        investment_balance=state.investment_balance,
+        ending_savings=results[-1].savings_end,
+        investment_balance=results[-1].investment_balance,
         average_happiness=total_happiness / MONTHS_IN_YEAR,
         total_happiness=total_happiness,
-        score=state.savings + state.investment_balance + total_happiness,
+        score=results[-1].savings_end + results[-1].investment_balance + total_happiness,
     )
+
+
+def run_simulation(fun_allocations, investment_amount=0.0, *, config=None, rng=None, seed=SHARED_SEED) -> SimulationResult:
+    """Compatibility API for scoring a complete classic plan."""
+    return summarize_months(list(iterate_simulation(fun_allocations, investment_amount, config=config, rng=rng, seed=seed)))
 
 
 def rank_simulations(results: Sequence[SimulationResult]) -> list[SimulationResult]:
