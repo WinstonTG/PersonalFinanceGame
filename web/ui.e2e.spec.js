@@ -5,7 +5,7 @@ test("player can submit a named plan and read the scored year", async ({ page })
   await page.getByLabel("PLAN NAME").fill("Balanced start");
   await page.getByLabel("Monthly auto-investment").fill("150");
   await page.getByLabel("Fun spending for month 1", { exact: true }).fill("400");
-  await page.getByRole("button", { name: /Run my simulation/ }).click();
+  await page.getByRole("button", { name: /Run the year/ }).click();
 
   await expect(page.locator("#results")).toBeVisible();
   await expect(page.locator("#result-plan-name")).toHaveText("Balanced start");
@@ -23,6 +23,6 @@ test("plan builder stays usable on a phone-sized viewport", async ({ page }) => 
   const columns = await page.locator("#months-grid").evaluate((element) =>
     getComputedStyle(element).gridTemplateColumns.split(" ").length,
   );
-  await expect(page.getByRole("button", { name: /Run my simulation/ })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Run the year/ })).toBeVisible();
   expect(columns).toBe(2);
 });
