@@ -7,7 +7,7 @@ from .documents import validate_document
 
 LABELS = {
     'income': 'Expected income', 'rent': 'Rent', 'food': 'Food & groceries',
-    'utilities': 'Utilities & phone', 'transport': 'Transportation',
+    'utilities': 'Utilities & phone', 'transport': 'Gas',
     'personal': 'Personal essentials', 'fun': 'Fun & activities',
     'investment': 'Investment', 'savings': 'Cash savings',
 }
@@ -40,6 +40,8 @@ def parse_budget_text(text):
         row = {}
         for key, label in LABELS.items():
             pattern = r'\s*'.join(re.escape(word) for word in label.split())
+            if key == 'transport':
+                pattern = r'(?:Gas|Transportation)'
             if ranged and key == 'income':
                 matches = re.findall(pattern + r'\s*\$\s*1,500\.00\s*[–−-]\s*\$\s*2,100\.00', table)
                 if len(matches) != 1:

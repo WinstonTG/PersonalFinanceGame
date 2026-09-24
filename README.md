@@ -26,10 +26,12 @@ python -m finance_game.server
 Open http://127.0.0.1:8001/budget.html. Students enter their name and title,
 then complete each of 12 months: rent, food, utilities,
 transport, personal essentials, fun, investment, and cash savings. Every field
-starts with shared expense defaults where applicable: $1,000 rent, $250 food and $50 each for utilities,
-transportation and personal essentials. Fun, investment and cash savings remain
+starts with shared expense defaults where applicable: fixed $1,000 rent, $25 each for food, utilities and gas,
+and $50 for personal essentials. Fun, investment and cash savings remain
 blank for the student to choose; explicit zero is accepted. Existing draft values
-are preserved, with missing baseline fields filled on restore. Old income estimates
+are preserved except rent, which is always reset to $1,000. Missing baseline fields
+are filled on restore. Use “Apply starting expenses to all months” to update an
+existing draft's expense defaults without changing its other allocations or notes. Old income estimates
 are replaced by the shared $1,500–$2,100 monthly range ($15 × 25–35 hours × 4 weeks).
 Actual hours are generated in the grader. Notes explain the student's choices.
 Copy previous month is optional. Drafts auto-save in that browser.
@@ -74,7 +76,7 @@ simulation engine.
 - 12 monthly turns, starting with $3,000 in savings.
 - Randomly selected 25–35 work hours per week every month.
 - Income uses 4 weeks per month at $15/hour.
-- $1,000 rent and $400 of other required expenses.
+- $1,000 fixed rent and $125 of other required expenses.
 - A player supplies one monthly auto-invest amount from $0–$500 and twelve
   fun-spending allocations from $0–$400.
 - Investments happen after required bills, cannot be withdrawn during the year,

@@ -38,6 +38,8 @@ test('real student PDF imports privately and grades one month at a time',async({
     const report=JSON.parse(await readFile(await (await download).path(),'utf8'));
     expect(report.completedMonths).toBe(12);expect(report.document.months[11].investment).toBe(161);
     expect(report.document.version).toBe(2);
+    expect(report.rulesVersion).toBe('fixed-rent-v3');
+    for(const month of report.months)expect(month.required_rent).toBe(1000);
     expect(report.document.incomeRange).toEqual({min:1500,max:2100});
     for(const month of report.months)expect(month.income).toBe(month.job_lost?0:month.hours_per_week*15*4);
     await page.screenshot({path:'test-results/grader-final.png',fullPage:true});

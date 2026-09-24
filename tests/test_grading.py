@@ -6,7 +6,7 @@ from finance_game.pdf_budget import parse_budget_text, LABELS, read_budget_pdf
 
 
 def plan():
-    row = dict.fromkeys(CATEGORIES, 0) | {'income': 2000, 'rent': 1000, 'food': 400, 'fun': 150, 'investment': 150, 'notes': ''}
+    row = dict.fromkeys(CATEGORIES, 0) | {'income': 2000, 'rent': 1000, 'food': 125, 'fun': 150, 'investment': 150, 'notes': ''}
     return {'version': 1, 'name': 'Student', 'title': 'Plan', 'months': [dict(row) for _ in range(12)]}
 
 
@@ -36,7 +36,7 @@ def test_budget_values_cannot_invent_income_or_remove_required_bills():
     month = session.advance(0)['months'][0]
     assert month['income'] <= 2100
     assert month['rent_paid'] == 1000
-    assert month['other_expenses_paid'] == 400
+    assert month['other_expenses_paid'] == 125
     assert month['savings_end'] >= 0
 
 
@@ -47,7 +47,7 @@ def test_monthly_investments_and_higher_expenses_are_used():
     first=session.advance(0)['months'][0]
     second=session.advance(1)['months'][1]
     assert first['investment_amount'] == 500
-    assert first['rent_paid'] == 1200
+    assert first['rent_paid'] == 1000
     assert first['other_expenses_paid'] == 450
     assert second['investment_amount'] == 0
 
@@ -58,8 +58,9 @@ def test_pdf_text_requires_each_month_and_category_once():
     for i,m in enumerate(doc['months'],1):
         text+=f'Month {i}\n'+''.join(f'{label} ${m[k]:,.2f}\n' for k,label in LABELS.items())+'Unassigned: $0.00 · Ending cash: $3000.00\n'
     assert parse_budget_text(text)==doc
+    assert parse_budget_text(text.replace('Gas $', 'Transportation $'))==doc
     with pytest.raises(ValueError):parse_budget_text(text.replace('Month 12','Month 11'))
-    with pytest.raises(ValueError):parse_budget_text(text.replace('Food & groceries $400.00','Food & groceries ???',1))
+    with pytest.raises(ValueError):parse_budget_text(text.replace('Food & groceries $125.00','Food & groceries ???',1))
     with pytest.raises(ValueError):read_budget_pdf(b'not a PDF')
 
 

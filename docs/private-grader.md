@@ -32,7 +32,7 @@ and the same year. Never publish these files to the repository.
 
 ## Grading workflow
 
-Four-week income is recorded as rules version `four-week-v2`. Grades saved
+Fixed rent and the $125 essentials baseline are recorded as rules version `fixed-rent-v3`. Grades saved
 before this change remain available for reference but are excluded from the
 current leaderboard and cannot be continued. Reimport those PDFs to grade all
 12 months under the same current rules. Version 2 student PDFs display an income
@@ -69,10 +69,10 @@ These rules extend the classic fixed-investment game for monthly worksheets:
   hours/week, and 4 weeks/month. Students see a $1,500–$2,100 income range;
   actual hours are generated only when grading. Older PDFs with a single income
   estimate still import, but that estimate is not a source of additional money.
-- Rent due is the greater of $1,000 and planned rent. Other essentials due are
-  the greater of $400 and the sum of food, utilities, transport and personal
+- Rent due is fixed at $1,000 regardless of planned rent. Other essentials due are
+  the greater of $125 and the sum of food, utilities, gas and personal
   expenses. Individual essential categories are pooled because the case study
-  only sets a combined $400 requirement. Zeroing a budget cannot erase bills.
+  only sets a combined $125 requirement. Zeroing a budget cannot erase bills.
 - Bills are paid from cash before that month's planned investment (0–500), then
   fun (0–400). Transfers and spending are capped by available cash. Investment
   balance grows by 0.8% at month end and cannot pay bills.

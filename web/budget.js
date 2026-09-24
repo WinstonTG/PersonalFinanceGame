@@ -1,4 +1,4 @@
-import { labels, keys, incomeRange, blankDocument, fillMissingBaseline, validateDocument, forecast } from './budget-model.js';
+import { labels, keys, baseline, incomeRange, blankDocument, fillMissingBaseline, validateDocument, forecast } from './budget-model.js';
 const $ = id => document.getElementById(id);
 const currency = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
 const money = value => currency.format(value);
@@ -24,6 +24,7 @@ for (const key of keys) {
   const label=element('label',labels[key],$('budget-fields'));
   const input=document.createElement('input'); input.id='field-'+key; input.type='number'; input.min='0'; input.step='.01';
   input.max=key==='fun'?'400':key==='investment'?'500':'100000';
+  input.readOnly=key==='rent';
   label.append(input);
   input.oninput=()=>{doc.months[current][key]=input.value===''?null:input.valueAsNumber; save(); review();};
 }
@@ -44,9 +45,8 @@ function review() {
   let summary=row.complete?'Unassigned income range: '+range(row.unassignedMin,row.unassignedMax)+'. Projected ending cash range: '+range(row.cashMin,row.cashMax)+'.':'Complete every category to review this month. Blank fields are treated as zero in this provisional forecast.';
   if(row.unassignedMin<0)summary+=' At lower work hours you allocate more than you earn; plan for a savings withdrawal.';
   if(row.cashMin<0)summary+=' Your cash may run out under this plan.';
-  if(month.rent!==null && month.rent<1000)summary+=' Rent is underfunded versus the $1,000 case study.';
   const essentials=['food','utilities','transport','personal'];
-  if(essentials.every(k=>month[k]!==null) && essentials.reduce((sum,k)=>sum+month[k],0)<400)summary+=' Essentials total less than the $400 case-study requirement.';
+  if(essentials.every(k=>month[k]!==null) && essentials.reduce((sum,k)=>sum+month[k],0)<125)summary+=' Essentials total less than the $125 case-study requirement.';
   $('month-summary').textContent=summary;
   $('budget-review').replaceChildren();
   rows.forEach((r,i)=>{
@@ -57,6 +57,10 @@ function review() {
 $('previous-month').onclick=()=>{current--;render();};
 $('next-month').onclick=()=>{current++;render();};
 $('copy-previous').onclick=()=>{doc.months[current]={...doc.months[current-1]};save();render();};
+$('reset-expenses').onclick=()=>{
+  if(!confirm('Set all 12 months to $1,000 rent, $25 each for food, gas and utilities, and $50 personal essentials? Other choices and notes will stay unchanged.'))return;
+  doc.months.forEach(month=>Object.assign(month,baseline));save();render();
+};
 function checked(action) { try {validateDocument(doc);action();} catch(e) {message(e.message);} }
 $('download-document').onclick=()=>checked(()=>{
   const url=URL.createObjectURL(new Blob([JSON.stringify(doc,null,2)],{type:'application/json'}));

@@ -38,7 +38,7 @@ def test_investing_happens_after_bills_and_grows_monthly():
     first = result.months[0]
 
     assert first.rent_paid == 1000
-    assert first.other_expenses_paid == 400
+    assert first.other_expenses_paid == 125
     assert first.investment_amount == 500
     assert first.investment_balance == pytest.approx(504)
     assert result.investment_balance > 6_000

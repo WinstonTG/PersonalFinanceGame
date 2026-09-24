@@ -2,7 +2,7 @@
 from dataclasses import asdict
 from .documents import validate_document
 from .engine import SHARED_SEED, iterate_simulation, summarize_months
-RULES_VERSION = 'four-week-v2'
+RULES_VERSION = 'fixed-rent-v3'
 
 
 class GradingSession:

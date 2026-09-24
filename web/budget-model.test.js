@@ -5,14 +5,14 @@ test('every month starts with shared assumptions but no discretionary choices',(
   const d=blankDocument();
   for(const month of d.months){
     for(const [key,value] of Object.entries(baseline))assert.equal(month[key],value);
-    assert.equal(month.food+month.utilities+month.transport+month.personal,400);
+    assert.equal(month.food+month.utilities+month.transport+month.personal,125);
     for(const key of ['fun','investment','savings'])assert.equal(month[key],null);
   }
   d.months[0].rent=1200;
   assert.equal(d.months[1].rent,1000);
 });
 test('restoring older drafts fills missing defaults without replacing student choices',()=>{
-  const d=blankDocument();Object.assign(d.months[0],{income:2100,food:0,rent:null,fun:80});
+  const d=blankDocument();Object.assign(d.months[0],{income:2100,food:0,rent:1200,fun:80});
   const restored=fillMissingBaseline(d);
   assert.equal(restored.months[0].income,undefined);
   assert.deepEqual(restored.incomeRange,{min:1500,max:2100});

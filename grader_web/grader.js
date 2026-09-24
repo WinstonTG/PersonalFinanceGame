@@ -1,6 +1,6 @@
 const $=id=>document.getElementById(id);
 const money=value=>new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'}).format(value);
-const labels={income:'Income',rent:'Rent',food:'Food',utilities:'Utilities',transport:'Transport',personal:'Personal',fun:'Fun',investment:'Investment',savings:'Savings target'};
+const labels={income:'Income',rent:'Rent',food:'Food',utilities:'Utilities',transport:'Gas',personal:'Personal',fun:'Fun',investment:'Investment',savings:'Savings target'};
 let selected=null, snapshot=null, sourceUrl=null;
 function add(tag,text,parent){const e=document.createElement(tag);e.textContent=text;parent.append(e);return e;}
 function row(values,parent){const tr=add('tr','',parent);values.forEach(v=>add('td',v,tr));}
@@ -19,7 +19,7 @@ async function list(){
 }
 function render(data){
   snapshot=data;$('workspace').hidden=false;$('student-title').textContent=data.document.name+' — '+data.document.title;
-  const outdated=data.rulesVersion!=='four-week-v2';
+  const outdated=data.rulesVersion!=='fixed-rent-v3';
   const plannedIncome=plan=>data.document.version===2?'$1,500–$2,100':money(plan.income)+' (old estimate)';
   $('progress').textContent=data.completedMonths+' OF 12 MONTHS REVEALED';
   $('next-month').disabled=data.completedMonths===12 || outdated;
@@ -46,7 +46,7 @@ function render(data){
     [['Income',plannedIncome(plan),m.income],['Rent',plan.rent,m.rent_paid],['Other essentials',plan.food+plan.utilities+plan.transport+plan.personal,m.other_expenses_paid],['Investment',plan.investment,m.investment_amount],['Fun',plan.fun,m.fun_spending],['Net cash saved',plan.savings,m.savings_end-prior]].forEach(([label,p,a])=>row([label,typeof p==='string'?p:money(p),money(a)],$('comparison')));
   }
   $('final-panel').hidden=!data.final || outdated;
-  if(outdated)$('status').textContent='This session used older rules. Reimport the student PDF to grade under the four-week rules.';
+  if(outdated)$('status').textContent='This session used older rules. Reimport the student PDF to grade under the current fixed-rent rules.';
   if(data.final){const f=data.final;$('final-score').textContent=f.score.toFixed(2)+' points';$('final-breakdown').textContent=money(f.ending_savings)+' cash + '+money(f.investment_balance)+' investments + '+f.total_happiness.toFixed(2)+' happiness points. Average monthly happiness: '+f.average_happiness.toFixed(2)+'.';}
 }
 $('pdf-file').onchange=async e=>{

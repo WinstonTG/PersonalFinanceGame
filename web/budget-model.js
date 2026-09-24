@@ -1,17 +1,18 @@
 export const labels = {
   rent: 'Rent', food: 'Food & groceries',
-  utilities: 'Utilities & phone', transport: 'Transportation', personal: 'Personal essentials',
+  utilities: 'Utilities & phone', transport: 'Gas', personal: 'Personal essentials',
   fun: 'Fun & activities', investment: 'Investment', savings: 'Cash savings',
 };
 export const keys = Object.keys(labels);
 export const incomeRange = Object.freeze({min:1500,max:2100});
 export const baseline = Object.freeze({
-  rent: 1000, food: 250, utilities: 50, transport: 50, personal: 50,
+  rent: 1000, food: 25, utilities: 25, transport: 25, personal: 50,
 });
 export function fillMissingBaseline(document) {
   return {...document, version:2, incomeRange:{...incomeRange}, months: document.months.map(month => {
     const filled = {...month};
     delete filled.income; // Old drafts used an estimate; income is now a shared range.
+    filled.rent = baseline.rent; // Rent is fixed, including restored/imported plans.
     for (const [key,value] of Object.entries(baseline)) {
       if (filled[key] == null) filled[key] = value;
     }

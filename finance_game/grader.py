@@ -137,7 +137,7 @@ class GraderHandler(SimpleHTTPRequestHandler):
                     identifier = payload['id']
                     old = self.store.load(identifier)
                     if old.get('rulesVersion') != RULES_VERSION:
-                        raise ValueError('This grade used older rules. Reimport the PDF to grade all months with four-week income.')
+                        raise ValueError('This grade used older rules. Reimport the PDF to grade all months with the current fixed-rent rules.')
                     if payload.get('expectedMonth') != old['completedMonths']:
                         raise ValueError('This session has advanced. Select it again to refresh.')
                     session = GradingSession(old['document'], self.store.seed)

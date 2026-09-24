@@ -45,7 +45,7 @@ class GameConfig:
     min_hours_per_week: int = 25
     max_hours_per_week: int = 35
     rent: float = 1_000.0
-    other_expenses: float = 400.0
+    other_expenses: float = 125.0
     min_fun: float = 0.0
     max_fun: float = 400.0
     max_investment: float = 500.0
@@ -89,7 +89,7 @@ class MonthResult:
     missed_other_expenses: bool
     food_shortage: bool
     required_rent: float = 1000.0
-    required_other_expenses: float = 400.0
+    required_other_expenses: float = 125.0
     bad_fortune_cost: float = 0.0
 
 
@@ -159,7 +159,7 @@ def iterate_simulation(
         requested_investment = budget['investment'] if budget else investment_amount
         if budget:
             requested_fun = budget['fun']
-        required_rent = max(config.rent, budget['rent']) if budget else config.rent
+        required_rent = config.rent
         required_other = max(config.other_expenses, sum(budget[k] for k in ('food', 'utilities', 'transport', 'personal'))) if budget else config.other_expenses
         hours = rng.randint(config.min_hours_per_week, config.max_hours_per_week)
         job_lost = state.job_lost_this_month
