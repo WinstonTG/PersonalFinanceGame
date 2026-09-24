@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import csv
+import math
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterable, TextIO
@@ -29,7 +30,10 @@ class SubmissionFormatError(ValueError):
 
 def _number(value: str, field: str, row_number: int) -> float:
     try:
-        return float(value.strip().replace("$", "").replace(" ", ""))
+        number = float(value.strip().replace("$", "").replace(" ", ""))
+        if not math.isfinite(number):
+            raise ValueError("non-finite number")
+        return number
     except (AttributeError, ValueError) as error:
         raise SubmissionFormatError(f"row {row_number}: {field} must be a number") from error
 
@@ -37,6 +41,8 @@ def _number(value: str, field: str, row_number: int) -> float:
 def _field(row: dict[str, str], names: tuple[str, ...], row_number: int) -> str:
     for name in names:
         if name in row:
+            if row[name] is None:
+                raise SubmissionFormatError(f"row {row_number}: missing {name} value")
             return row[name]
     raise SubmissionFormatError(f"row {row_number}: missing {names[0]} column")
 

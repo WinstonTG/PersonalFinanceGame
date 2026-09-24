@@ -8,10 +8,11 @@ const results = document.querySelector("#results");
 const emptyState = document.querySelector("#empty-state");
 const errorMessage = document.querySelector("#form-error");
 
-const money = (value) => new Intl.NumberFormat("en-US", {
+const currencyFormatter = new Intl.NumberFormat("en-US", {
   style: "currency", currency: "USD", maximumFractionDigits: 0,
-}).format(value);
-const signed = (value) => (value >= 0 ? "+" : "−") + money(Math.abs(value));
+});
+const money = (value) => currencyFormatter.format(value);
+const signed = (value) => (value >= 0 ? "+" : "−") + Math.abs(value).toFixed(0) + " pts";
 
 function monthEditor(month) {
   const wrapper = document.createElement("label");
@@ -43,7 +44,10 @@ function renderResults(simulation, planName) {
   document.querySelector("#event-count").textContent = simulation.badFortunes + " / 2 bad fortune events";
 
   document.querySelector("#month-results").innerHTML = simulation.months.map((month) => {
-    const flags = [month.event, month.jobLost ? "No income" : "", month.foodShortage ? "Food shortage" : ""]
+    const flags = [month.event, month.jobLost ? "No employment income" : "",
+      month.gift ? "Gift " + money(month.gift) : "",
+      month.missedRent ? "Rent not fully paid" : "",
+      month.missedOtherExpenses ? "Other essentials not fully paid" : ""]
       .filter(Boolean).join(" · ");
     return '<tr>' +
       '<td><strong>' + month.month + '</strong></td>' +
@@ -63,6 +67,9 @@ form.addEventListener("submit", (event) => {
   event.preventDefault();
   errorMessage.hidden = true;
   try {
+    if (investmentInput.value.trim() === "") {
+      throw new Error("Enter a monthly investment amount, including 0 if you do not want to invest.");
+    }
     const allocations = [...monthsGrid.querySelectorAll("input")].map((input) => Number(input.value));
     renderResults(runPlan(allocations, Number(investmentInput.value)), nameInput.value.trim());
   } catch (error) {

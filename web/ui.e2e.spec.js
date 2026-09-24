@@ -14,6 +14,18 @@ test("player can submit a named plan and read the scored year", async ({ page })
   await expect(page.locator("#investment-balance")).not.toHaveText("$0");
   await expect(page.locator("#total-score")).not.toHaveText("0 pts");
   await expect(page.locator("#quality-bar")).toHaveAttribute("style", /width:/);
+  await expect(page.locator("#month-results tr").first().locator("td").nth(6)).toContainText("pts");
+});
+
+test("empty investment requires an explicit choice", async ({ page }) => {
+  await page.goto("http://127.0.0.1:8000");
+  await page.getByLabel("Monthly auto-investment").fill("");
+  await page.getByRole("button", { name: /Run the year/ }).click();
+  await expect(page.locator("#form-error")).toContainText("Enter a monthly investment");
+  await page.getByLabel("Monthly auto-investment").fill("0");
+  await page.getByRole("button", { name: /Run the year/ }).click();
+  await expect(page.locator("#results")).toBeVisible();
+  await expect(page.locator("#investment-balance")).toHaveText("$0");
 });
 
 test("plan builder stays usable on a phone-sized viewport", async ({ page }) => {

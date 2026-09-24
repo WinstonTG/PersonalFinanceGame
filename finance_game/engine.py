@@ -137,9 +137,9 @@ def run_simulation(
     _validate_config(config)
     if len(fun_allocations) != MONTHS_IN_YEAR:
         raise ValueError("fun_allocations must contain exactly 12 monthly values")
-    if any(value < config.min_fun or value > config.max_fun for value in fun_allocations):
+    if any(not math.isfinite(value) or value < config.min_fun or value > config.max_fun for value in fun_allocations):
         raise ValueError(f"each fun allocation must be between {config.min_fun:g} and {config.max_fun:g}")
-    if investment_amount < 0 or investment_amount > config.max_investment:
+    if not math.isfinite(investment_amount) or investment_amount < 0 or investment_amount > config.max_investment:
         raise ValueError(f"investment_amount must be between 0 and {config.max_investment:g}")
 
     state = SimulationState(savings=config.starting_savings)
