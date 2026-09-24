@@ -1,4 +1,4 @@
-import { labels, keys, blankDocument, validateDocument, forecast } from './budget-model.js';
+import { labels, keys, blankDocument, fillMissingBaseline, validateDocument, forecast } from './budget-model.js';
 const $ = id => document.getElementById(id);
 const currency = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
 const money = value => currency.format(value);
@@ -6,7 +6,7 @@ const storageKey = 'finance-budget-v1';
 let doc = blankDocument(), current = 0;
 try {
   const saved = JSON.parse(localStorage.getItem(storageKey));
-  if (saved?.version === 1 && saved.months?.length === 12 && saved.months.every(m => m && typeof m === 'object')) doc = saved;
+  if (saved?.version === 1 && saved.months?.length === 12 && saved.months.every(m => m && typeof m === 'object')) doc = fillMissingBaseline(saved);
 } catch { $('draft-status').textContent = 'Could not restore draft. Downloads still work.'; }
 function save() {
   try { localStorage.setItem(storageKey,JSON.stringify(doc)); $('draft-status').textContent='Draft saved in this browser'; }

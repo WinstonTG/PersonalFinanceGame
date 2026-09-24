@@ -26,7 +26,11 @@ python -m finance_game.server
 Open http://127.0.0.1:8001/budget.html. Students enter their name and title,
 then complete each of 12 months: estimated income, rent, food, utilities,
 transport, personal essentials, fun, investment, and cash savings. Every field
-starts blank; explicit zero is accepted. Notes explain the student's choices.
+starts with the shared income/expense defaults where applicable: $1,948.50
+expected income (30 hours/week), $1,000 rent, $250 food and $50 each for utilities,
+transportation and personal essentials. Fun, investment and cash savings remain
+blank for the student to choose; explicit zero is accepted. Existing draft values
+are preserved, with missing baseline fields filled on restore. Notes explain the student's choices.
 Copy previous month is optional. Drafts auto-save in that browser.
 
 The worksheet shows unassigned income and projected cash carried forward from

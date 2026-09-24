@@ -4,9 +4,22 @@ export const labels = {
   fun: 'Fun & activities', investment: 'Investment', savings: 'Cash savings',
 };
 export const keys = Object.keys(labels);
+export const baseline = Object.freeze({
+  income: 1948.50, // $15/hour × 30 expected hours/week × 4.33 weeks
+  rent: 1000, food: 250, utilities: 50, transport: 50, personal: 50,
+});
+export function fillMissingBaseline(document) {
+  return {...document, months: document.months.map(month => {
+    const filled = {...month};
+    for (const [key,value] of Object.entries(baseline)) {
+      if (filled[key] == null) filled[key] = value;
+    }
+    return filled;
+  })};
+}
 export function blankDocument() {
-  return { version: 1, name: '', title: '', months: Array.from({length:12}, () =>
-    Object.fromEntries([...keys.map(key => [key, null]), ['notes', '']])) };
+  return fillMissingBaseline({ version: 1, name: '', title: '', months: Array.from({length:12}, () =>
+    Object.fromEntries([...keys.map(key => [key, null]), ['notes', '']])) });
 }
 export function validateDocument(doc) {
   if (!doc || doc.version !== 1 || !Array.isArray(doc.months) || doc.months.length !== 12) throw Error('Use a version 1 budget document with 12 months.');

@@ -2,6 +2,10 @@ import {test,expect} from 'playwright/test';
 
 test('student builds twelve budgets, downloads, reopens and submits',async({page})=>{
   await page.goto('http://127.0.0.1:8000/budget.html');
+  await expect(page.locator('#field-income')).toHaveValue('1948.5');
+  await expect(page.locator('#field-rent')).toHaveValue('1000');
+  await expect(page.locator('#field-food')).toHaveValue('250');
+  await expect(page.locator('#field-fun')).toHaveValue('');
   await page.locator('#student-name').fill('Test Student');
   await page.locator('#budget-title').fill('Buffer plan');
   await page.locator('#submit-document').click();
