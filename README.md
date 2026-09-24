@@ -1,5 +1,51 @@
 # Personal Finance Game
 
+## Student budget documents
+
+Start the submission-capable app from the repository root:
+
+```sh
+python -m finance_game.server
+```
+
+Open http://127.0.0.1:8001/budget.html. Students enter their name and title,
+then complete each of 12 months: estimated income, rent, food, utilities,
+transport, personal essentials, fun, investment, and cash savings. Every field
+starts blank; explicit zero is accepted. Notes explain the student's choices.
+Copy previous month is optional. Drafts auto-save in that browser.
+
+The worksheet shows unassigned income and projected cash carried forward from
+$3,000. Savings stays in cash rather than being deducted twice. Underfunded
+essentials and deficits are flagged for reflection; students may submit an
+imperfect plan for instructor feedback. These forecasts are not scored game
+results. The existing simulator and CSV competition scorer remain separate;
+arbitrary student expenses do not alter official competition scores.
+
+Download budget document creates a JSON file that can be reopened using Open
+budget document. Print / Save PDF produces a readable full document containing
+all categories and notes for every month. PDF files are for reading; import
+uses the JSON format. Submission validates all months and stores the document
+in submissions.sqlite3 on the host, returning a receipt. That database is ignored
+by Git. A static HTTP server supports editing/export but cannot accept submissions.
+
+Instructors export received plans using:
+
+```sh
+python -m finance_game.server --export
+```
+
+The command prints JSON containing receipt, timestamp and complete document for
+every submission. Downloaded JSON files can be opened in the worksheet to review
+or print them. No student documents are exposed by the static file server.
+Back up submissions.sqlite3 to retain receipts and plans. Each submit creates a
+new receipt; revisions are retained as separate submissions.
+
+By default only this computer can connect. For a trusted classroom network,
+run `python -m finance_game.server --bind 0.0.0.0` and give students this
+computer's LAN address on port 8001. This is a local classroom tool without user
+accounts, not a public hosted submission service. Do not collect account numbers
+or real financial credentials.
+
 This repository contains the first version of the game's month-by-month
 simulation engine.
 

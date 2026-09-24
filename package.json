@@ -3,8 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test:ui": "node --test web/simulation.test.js",
-    "test:e2e": "playwright test web/ui.e2e.spec.js"
+    "test:ui": "node --test web/simulation.test.js web/budget-model.test.js",
+    "test:e2e": "playwright test"
   },
   "devDependencies": {
     "playwright": "^1.63.0"
