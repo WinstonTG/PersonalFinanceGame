@@ -1,12 +1,13 @@
-import { labels, keys, blankDocument, fillMissingBaseline, validateDocument, forecast } from './budget-model.js';
+import { labels, keys, incomeRange, blankDocument, fillMissingBaseline, validateDocument, forecast } from './budget-model.js';
 const $ = id => document.getElementById(id);
 const currency = new Intl.NumberFormat('en-US',{style:'currency',currency:'USD'});
 const money = value => currency.format(value);
+const range = (low,high) => money(low)+' – '+money(high);
 const storageKey = 'finance-budget-v1';
 let doc = blankDocument(), current = 0;
 try {
   const saved = JSON.parse(localStorage.getItem(storageKey));
-  if (saved?.version === 1 && saved.months?.length === 12 && saved.months.every(m => m && typeof m === 'object')) doc = fillMissingBaseline(saved);
+  if ([1,2].includes(saved?.version) && saved.months?.length === 12 && saved.months.every(m => m && typeof m === 'object')) doc = fillMissingBaseline(saved);
 } catch { $('draft-status').textContent = 'Could not restore draft. Downloads still work.'; }
 function save() {
   try { localStorage.setItem(storageKey,JSON.stringify(doc)); $('draft-status').textContent='Draft saved in this browser'; }
@@ -40,9 +41,9 @@ function render() {
 }
 function review() {
   const rows=forecast(doc); const row=rows[current]; const month=doc.months[current];
-  let summary=row.complete?'Unassigned income: '+money(row.unassigned)+'. Projected ending cash: '+money(row.cash)+'.':'Complete every category to review this month. Blank fields are treated as zero in this provisional forecast.';
-  if(row.unassigned<0)summary+=' You are allocating more than your income; revise your budget or explain the savings withdrawal.';
-  if(row.cash<0)summary+=' Your cash runs out under this plan.';
+  let summary=row.complete?'Unassigned income range: '+range(row.unassignedMin,row.unassignedMax)+'. Projected ending cash range: '+range(row.cashMin,row.cashMax)+'.':'Complete every category to review this month. Blank fields are treated as zero in this provisional forecast.';
+  if(row.unassignedMin<0)summary+=' At lower work hours you allocate more than you earn; plan for a savings withdrawal.';
+  if(row.cashMin<0)summary+=' Your cash may run out under this plan.';
   if(month.rent!==null && month.rent<1000)summary+=' Rent is underfunded versus the $1,000 case study.';
   const essentials=['food','utilities','transport','personal'];
   if(essentials.every(k=>month[k]!==null) && essentials.reduce((sum,k)=>sum+month[k],0)<400)summary+=' Essentials total less than the $400 case-study requirement.';
@@ -50,7 +51,7 @@ function review() {
   $('budget-review').replaceChildren();
   rows.forEach((r,i)=>{
     const tr=document.createElement('tr'); $('budget-review').append(tr);
-    [String(i+1)+(r.complete?'':' (draft)'),money(doc.months[i].income??0),money(r.expenses),money(doc.months[i].investment??0),money(doc.months[i].savings??0),money(r.unassigned),money(r.cash)].forEach(v=>element('td',v,tr));
+    [String(i+1)+(r.complete?'':' (draft)'),range(incomeRange.min,incomeRange.max),money(r.expenses),money(doc.months[i].investment??0),money(doc.months[i].savings??0),range(r.unassignedMin,r.unassignedMax),range(r.cashMin,r.cashMax)].forEach(v=>element('td',v,tr));
   });
 }
 $('previous-month').onclick=()=>{current--;render();};
@@ -66,21 +67,22 @@ $('import-document').onchange=async e=>{
   try {
     const file=e.target.files[0];if(!file)return;
     if(file.size>65536)throw Error('Document is too large (64 KB maximum).');
-    const imported=validateDocument(JSON.parse(await file.text()));
+    const imported=fillMissingBaseline(validateDocument(JSON.parse(await file.text())));
     if(!confirm('Replace your current draft with this document?'))return;
     doc=imported;current=0;save();$('student-name').value=doc.name;$('budget-title').value=doc.title;render();message('Document opened. Review before submitting.');
   }catch(error){message('Could not open document: '+error.message);}finally{e.target.value='';}
 };
 $('print-document').onclick=()=>checked(()=>{
   const root=$('print-budget');root.replaceChildren();
-  element('p','Budget document v1',root);
+  element('p','Budget document v2',root);
   element('h1',doc.title,root);element('p','Student: '+doc.name+' · 12-month budget forecast · Starting cash: $3,000',root);
   const rows=forecast(doc);
   doc.months.forEach((m,i)=>{
     const section=element('article','',root);element('h2','Month '+(i+1),section);
     const table=element('table','',section);
+    const incomeRow=element('tr','',table);element('td','Expected income',incomeRow);element('td',range(incomeRange.min,incomeRange.max),incomeRow);
     keys.forEach(k=>{const tr=element('tr','',table);element('td',labels[k],tr);element('td',money(m[k]),tr);});
-    element('p','Unassigned: '+money(rows[i].unassigned)+' · Ending cash: '+money(rows[i].cash),section);
+    element('p','Unassigned: '+range(rows[i].unassignedMin,rows[i].unassignedMax)+' · Ending cash: '+range(rows[i].cashMin,rows[i].cashMax),section);
     element('p',m.notes,section);
   });window.print();
 });

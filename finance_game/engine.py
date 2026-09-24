@@ -9,7 +9,7 @@ from typing import Sequence
 
 
 MONTHS_IN_YEAR = 12
-WEEKS_PER_MONTH = 4.33
+WEEKS_PER_MONTH = 4
 SHARED_SEED = 20260924
 
 
@@ -150,7 +150,8 @@ def iterate_simulation(
     if monthly_budgets is not None:
         from .documents import validate_document
         monthly_budgets = validate_document({
-            'version': 1, 'name': 'Grading', 'title': 'Budget', 'months': list(monthly_budgets),
+            'version': 2, 'incomeRange': {'min': 1500, 'max': 2100},
+            'name': 'Grading', 'title': 'Budget', 'months': list(monthly_budgets),
         })['months']
 
     for month, requested_fun in enumerate(fun_allocations, start=1):

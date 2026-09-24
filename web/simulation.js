@@ -3,7 +3,7 @@ export const SHARED_SEED = 20260924;
 
 export const DEFAULTS = Object.freeze({
   startingSavings: 3000, hourlyWage: 15, rent: 1000, otherExpenses: 400,
-  minHours: 25, maxHours: 35, weeksPerMonth: 4.33, maxFun: 400,
+  minHours: 25, maxHours: 35, weeksPerMonth: 4, maxFun: 400,
   maxInvestment: 500, investmentMonthlyReturn: 0.008,
   giftAmount: 50, giftChance: 0.5, badFortuneChance: 0.1,
   maxBadFortunes: 2, badFortuneMoneyLoss: 200, badFortuneHappinessLoss: 35,

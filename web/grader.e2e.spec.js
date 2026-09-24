@@ -37,6 +37,9 @@ test('real student PDF imports privately and grades one month at a time',async({
     const download=page.waitForEvent('download');await page.locator('#download-report').click();
     const report=JSON.parse(await readFile(await (await download).path(),'utf8'));
     expect(report.completedMonths).toBe(12);expect(report.document.months[11].investment).toBe(161);
+    expect(report.document.version).toBe(2);
+    expect(report.document.incomeRange).toEqual({min:1500,max:2100});
+    for(const month of report.months)expect(month.income).toBe(month.job_lost?0:month.hours_per_week*15*4);
     await page.screenshot({path:'test-results/grader-final.png',fullPage:true});
     await page.emulateMedia({media:'print'});await expect(page.locator('#final-score')).toBeVisible();
     const outsider=await browser.newContext();const other=await outsider.request.get('http://127.0.0.1:8012/api/sessions');expect(other.status()).toBe(401);await outsider.close();

@@ -10,12 +10,12 @@ def no_fortune_config(**overrides):
     return GameConfig(fortune=fortune, **overrides)
 
 
-def test_simulation_uses_25_to_35_hours_and_433_weeks():
+def test_simulation_uses_25_to_35_hours_and_four_weeks():
     result = run_simulation([200] * 12, config=no_fortune_config(), rng=random.Random(7))
 
     assert len(result.months) == 12
     assert all(25 <= month.hours_per_week <= 35 for month in result.months)
-    assert all(month.income == month.hours_per_week * 15 * 4.33 for month in result.months)
+    assert all(month.income == month.hours_per_week * 15 * 4 for month in result.months)
 
 
 def test_shared_seed_makes_repeated_plans_identical():

@@ -3,13 +3,14 @@
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>My monthly budget</title><link rel="stylesheet" href="styles.css"><link rel="stylesheet" href="budget.css"></head>
 <body><main class="shell">
 <header class="topbar"><a class="brand" href="index.html">PERSONAL FINANCE GAME</a><span>Student budget workbook</span></header>
-<section class="hero"><div class="eyebrow">PLAN · REFLECT · SUBMIT</div><h1>Give every dollar<br>a purpose.</h1><p class="hero-copy">Build your own budget, one month at a time. Start with $3,000 cash. Estimate your income, itemize your expenses, and decide what to save.</p></section>
+<section class="hero"><div class="eyebrow">PLAN · REFLECT · SUBMIT</div><h1>Give every dollar<br>a purpose.</h1><p class="hero-copy">Build your own budget, one month at a time. Start with $3,000 cash. Plan for a range of income, itemize your expenses, and decide what to save.</p></section>
 <section class="panel">
 <div class="plan-meta"><label>YOUR NAME<input id="student-name" maxlength="100" autocomplete="name"></label><label>PLAN TITLE<input id="budget-title" maxlength="100"></label><span id="draft-status" role="status">Draft stays in this browser</span></div>
-<p class="guidance">Everyone starts with $3,000 cash. Each month is prefilled with $1,948.50 expected income ($15/hour × 30 hours/week × 4.33 weeks), $1,000 rent, and $400 essentials: $250 food plus $50 each for utilities, transportation and personal essentials. You can adjust these estimates. Actual work varies from 25–35 hours/week, and events can change income. Choose your own fun, investment and savings allocations.</p>
+<p class="guidance">Everyone starts with $3,000 cash. Expected monthly income is $1,500–$2,100 ($15/hour × 25–35 hours/week × 4 weeks). The grader randomly generates the actual hours; job loss can reduce wages to $0. Rent starts at $1,000 and essentials at $400: $250 food plus $50 each for utilities, transportation and personal essentials. Choose your own spending and savings allocations.</p>
 <nav id="month-nav" aria-label="Budget month"></nav>
 <div class="section-heading"><h2 id="month-heading">Month 1</h2><button id="copy-previous" type="button">Copy previous month</button></div>
 <p>Enter 0 explicitly for categories you do not fund. Savings is a cash allocation, not an expense; investments are locked for the year.</p>
+<p id="income-range"><strong>Expected income: $1,500–$2,100 per month</strong><br>Four weeks per month. Forecast ranges exclude gifts and misfortunes; income is not guaranteed.</p>
 <div id="budget-fields"></div>
 <label class="notes">Why this budget? What will you do if income drops?<textarea id="month-notes" maxlength="2000" rows="3"></textarea></label>
 <div id="month-summary" class="guidance" aria-live="polite"></div>

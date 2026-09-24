@@ -12,18 +12,20 @@ async function list(){
   const students=await api('/api/sessions');$('students').replaceChildren();
   students.sort((a,b)=>(b.score??-Infinity)-(a.score??-Infinity));
   for(const student of students){
-    const button=add('button',student.name+' · '+(student.score===null?student.completedMonths+'/12 months':student.score.toFixed(2)+' pts'),$('students'));
+    const button=add('button',student.name+' · '+(student.outdated?'Old rules — reimport PDF':student.score===null?student.completedMonths+'/12 months':student.score.toFixed(2)+' pts'),$('students'));
     button.onclick=async()=>{try{selected=student.id;render(await api('/api/session?id='+selected));$('source-link').replaceChildren();}catch(e){$('status').textContent=e.message;}};
   }
   if(!students.length)add('p','No PDFs imported yet.',$('students'));
 }
 function render(data){
   snapshot=data;$('workspace').hidden=false;$('student-title').textContent=data.document.name+' — '+data.document.title;
+  const outdated=data.rulesVersion!=='four-week-v2';
+  const plannedIncome=plan=>data.document.version===2?'$1,500–$2,100':money(plan.income)+' (old estimate)';
   $('progress').textContent=data.completedMonths+' OF 12 MONTHS REVEALED';
-  $('next-month').disabled=data.completedMonths===12;
+  $('next-month').disabled=data.completedMonths===12 || outdated;
   $('next-month').textContent=data.completedMonths===0?'Confirm plan & simulate Month 1':data.completedMonths===12?'Year complete':'Simulate Month '+(data.completedMonths+1);
   $('plan-head').replaceChildren();const head=add('tr','',$('plan-head'));['Month',...Object.values(labels)].forEach(v=>add('th',v,head));
-  $('plan-body').replaceChildren();data.document.months.forEach((m,i)=>row([i+1,...Object.keys(labels).map(k=>money(m[k]))],$('plan-body')));
+  $('plan-body').replaceChildren();data.document.months.forEach((m,i)=>row([i+1,...Object.keys(labels).map(k=>k==='income'?plannedIncome(m):money(m[k]))],$('plan-body')));
   $('plan-details').open=data.completedMonths===0;
   $('history').replaceChildren();data.months.forEach(m=>row([m.month,money(m.income),money(m.gifts),money(m.bad_fortune_cost),money(m.rent_paid+m.other_expenses_paid),money(m.investment_amount),money(m.fun_spending),money(m.savings_end),m.happiness_change.toFixed(2)+' pts'],$('history')));
   const m=data.months.at(-1);$('month-panel').hidden=!m;
@@ -41,9 +43,10 @@ function render(data){
     $('cards').replaceChildren();[['Cash',money(m.savings_end)],['Investments',money(m.investment_balance)],['Happiness this month',m.happiness_change.toFixed(2)+' pts'],['Happiness so far',m.happiness_end.toFixed(2)+' pts']].forEach(([label,value])=>{const card=add('div',label,$('cards'));card.className='card';add('strong',value,card);});
     $('comparison').replaceChildren();
     const prior=data.months.length>1?data.months.at(-2).savings_end:3000;
-    [['Income',plan.income,m.income],['Rent',plan.rent,m.rent_paid],['Other essentials',plan.food+plan.utilities+plan.transport+plan.personal,m.other_expenses_paid],['Investment',plan.investment,m.investment_amount],['Fun',plan.fun,m.fun_spending],['Net cash saved',plan.savings,m.savings_end-prior]].forEach(([label,p,a])=>row([label,money(p),money(a)],$('comparison')));
+    [['Income',plannedIncome(plan),m.income],['Rent',plan.rent,m.rent_paid],['Other essentials',plan.food+plan.utilities+plan.transport+plan.personal,m.other_expenses_paid],['Investment',plan.investment,m.investment_amount],['Fun',plan.fun,m.fun_spending],['Net cash saved',plan.savings,m.savings_end-prior]].forEach(([label,p,a])=>row([label,typeof p==='string'?p:money(p),money(a)],$('comparison')));
   }
-  $('final-panel').hidden=!data.final;
+  $('final-panel').hidden=!data.final || outdated;
+  if(outdated)$('status').textContent='This session used older rules. Reimport the student PDF to grade under the four-week rules.';
   if(data.final){const f=data.final;$('final-score').textContent=f.score.toFixed(2)+' points';$('final-breakdown').textContent=money(f.ending_savings)+' cash + '+money(f.investment_balance)+' investments + '+f.total_happiness.toFixed(2)+' happiness points. Average monthly happiness: '+f.average_happiness.toFixed(2)+'.';}
 }
 $('pdf-file').onchange=async e=>{

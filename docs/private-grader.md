@@ -32,6 +32,12 @@ and the same year. Never publish these files to the repository.
 
 ## Grading workflow
 
+Four-week income is recorded as rules version `four-week-v2`. Grades saved
+before this change remain available for reference but are excluded from the
+current leaderboard and cannot be continued. Reimport those PDFs to grade all
+12 months under the same current rules. Version 2 student PDFs display an income
+range instead of an estimate; their forecasts exclude random events.
+
 1. Choose one student's PDF. The importer reads the visible category tables,
    validates 12 complete months, and displays all extracted values.
 2. Verify the student's identity and values against the original PDF link.
@@ -60,8 +66,9 @@ https://pypdf.readthedocs.io/en/stable/user/extract-text.html
 These rules extend the classic fixed-investment game for monthly worksheets:
 
 - Starting cash: $3,000. Actual wages use $15/hour, a random integer from 25–35
-  hours/week, and 4.33 weeks/month. The student's income is an estimate, not a
-  source of additional money.
+  hours/week, and 4 weeks/month. Students see a $1,500–$2,100 income range;
+  actual hours are generated only when grading. Older PDFs with a single income
+  estimate still import, but that estimate is not a source of additional money.
 - Rent due is the greater of $1,000 and planned rent. Other essentials due are
   the greater of $400 and the sum of food, utilities, transport and personal
   expenses. Individual essential categories are pooled because the case study

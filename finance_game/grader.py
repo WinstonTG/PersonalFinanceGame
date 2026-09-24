@@ -13,7 +13,7 @@ from urllib.parse import parse_qs, urlsplit
 import uuid
 import webbrowser
 
-from .grading import GradingSession
+from .grading import GradingSession, RULES_VERSION
 from .pdf_budget import read_budget_pdf
 
 
@@ -50,7 +50,8 @@ class Store:
             rows = connection.execute('SELECT id,snapshot FROM grades ORDER BY rowid DESC').fetchall()
         return [{'id': identifier, 'name': (s := json.loads(raw))['document']['name'],
                  'title': s['document']['title'], 'completedMonths': s['completedMonths'],
-                 'score': s['final']['score'] if s['final'] else None} for identifier, raw in rows]
+                 'outdated': s.get('rulesVersion') != RULES_VERSION,
+                 'score': s['final']['score'] if s['final'] and s.get('rulesVersion') == RULES_VERSION else None} for identifier, raw in rows]
 
 
 class GraderHandler(SimpleHTTPRequestHandler):
@@ -135,6 +136,8 @@ class GraderHandler(SimpleHTTPRequestHandler):
                     payload = json.loads(data)
                     identifier = payload['id']
                     old = self.store.load(identifier)
+                    if old.get('rulesVersion') != RULES_VERSION:
+                        raise ValueError('This grade used older rules. Reimport the PDF to grade all months with four-week income.')
                     if payload.get('expectedMonth') != old['completedMonths']:
                         raise ValueError('This session has advanced. Select it again to refresh.')
                     session = GradingSession(old['document'], self.store.seed)

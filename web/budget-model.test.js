@@ -14,7 +14,8 @@ test('every month starts with shared assumptions but no discretionary choices',(
 test('restoring older drafts fills missing defaults without replacing student choices',()=>{
   const d=blankDocument();Object.assign(d.months[0],{income:2100,food:0,rent:null,fun:80});
   const restored=fillMissingBaseline(d);
-  assert.equal(restored.months[0].income,2100);
+  assert.equal(restored.months[0].income,undefined);
+  assert.deepEqual(restored.incomeRange,{min:1500,max:2100});
   assert.equal(restored.months[0].food,0);
   assert.equal(restored.months[0].rent,1000);
   assert.equal(restored.months[0].fun,80);
@@ -24,9 +25,12 @@ test('savings allocation stays in cash and income carries forward',()=>{
   d.months.forEach(m=>{keys.forEach(k=>m[k]=0);Object.assign(m,{income:2000,rent:1000,food:400,fun:100,investment:200,savings:300});});
   validateDocument(d);
   const rows=forecast(d);
-  assert.equal(rows[0].unassigned,0);
-  assert.equal(rows[0].cash,3300);
-  assert.equal(rows[11].cash,6600);
+  assert.equal(rows[0].unassignedMin,-500);
+  assert.equal(rows[0].unassignedMax,100);
+  assert.equal(rows[0].cashMin,2800);
+  assert.equal(rows[0].cashMax,3400);
+  assert.equal(rows[11].cashMin,600);
+  assert.equal(rows[11].cashMax,7800);
 });
 test('incomplete documents cannot be submitted',()=>{
   const d=blankDocument();d.name='A';d.title='Plan';

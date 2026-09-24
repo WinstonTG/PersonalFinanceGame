@@ -2,6 +2,7 @@
 from dataclasses import asdict
 from .documents import validate_document
 from .engine import SHARED_SEED, iterate_simulation, summarize_months
+RULES_VERSION = 'four-week-v2'
 
 
 class GradingSession:
@@ -27,6 +28,7 @@ class GradingSession:
         if final:
             del final['months']
         return {
+            'rulesVersion': RULES_VERSION,
             'document': self.document, 'completedMonths': len(self.months),
             'months': [asdict(month) for month in self.months], 'final': final,
         }

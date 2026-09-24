@@ -34,7 +34,7 @@ def test_budget_values_cannot_invent_income_or_remove_required_bills():
         m.update(income=99999,rent=0,food=0,investment=0,savings=99999)
     session = GradingSession(document)
     month = session.advance(0)['months'][0]
-    assert month['income'] <= 2273.25
+    assert month['income'] <= 2100
     assert month['rent_paid'] == 1000
     assert month['other_expenses_paid'] == 400
     assert month['savings_end'] >= 0
@@ -85,3 +85,15 @@ def test_private_year_and_progress_survive_store_restart(tmp_path):
     assert reopened.load('student')==session.snapshot()
     other=GradingSession(plan(), reopened.seed)
     assert other.advance(0)==session.snapshot()
+
+
+def test_older_rule_scores_are_excluded_from_current_leaderboard(tmp_path):
+    from finance_game.grader import Store
+    store=Store(tmp_path)
+    session=GradingSession(plan(),store.seed)
+    for i in range(12):session.advance(i)
+    old=session.snapshot();del old['rulesVersion']
+    store.save('older',old)
+    entry=store.listing()[0]
+    assert entry['outdated'] is True
+    assert entry['score'] is None

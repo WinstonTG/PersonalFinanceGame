@@ -20,8 +20,10 @@ def parse_budget_text(text):
         raise ValueError('Student name not found. Use Print / Save PDF in the student workbook.')
     name = re.sub(r'\s+', ' ', identity[1]).strip()
     before = text[:identity.start()]
-    if 'Budget document v1' in before:
-        title = before.split('Budget document v1')[-1].strip()
+    ranged = 'Budget document v2' in before
+    marker = 'Budget document v2' if ranged else 'Budget document v1'
+    if marker in before:
+        title = before.split(marker)[-1].strip()
     else:
         title = before.strip().splitlines()[-1] if before.strip() else 'Imported budget'
     title = re.sub(r'\s+', ' ', title).strip()
@@ -38,6 +40,11 @@ def parse_budget_text(text):
         row = {}
         for key, label in LABELS.items():
             pattern = r'\s*'.join(re.escape(word) for word in label.split())
+            if ranged and key == 'income':
+                matches = re.findall(pattern + r'\s*\$\s*1,500\.00\s*[–−-]\s*\$\s*2,100\.00', table)
+                if len(matches) != 1:
+                    raise ValueError(f'Month {index+1}: expected the income range $1,500–$2,100.')
+                continue
             values = re.findall(pattern + r'\s*\$\s*([0-9]+(?:,[0-9]{3})*\.[0-9]{2})', table)
             if len(values) != 1:
                 raise ValueError(f'Month {index+1}: could not read {label} uniquely. Export again; do not use a scanned PDF.')
@@ -45,7 +52,10 @@ def parse_budget_text(text):
         # Notes remain available in the source PDF; they do not affect scoring.
         row['notes'] = ''
         months.append(row)
-    return validate_document({'version': 1, 'name': name, 'title': title, 'months': months})
+    document = {'version': 2 if ranged else 1, 'name': name, 'title': title, 'months': months}
+    if ranged:
+        document['incomeRange'] = {'min': 1500, 'max': 2100}
+    return validate_document(document)
 
 
 def read_budget_pdf(data):

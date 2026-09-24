@@ -9,8 +9,11 @@ CATEGORIES = ('income', 'rent', 'food', 'utilities', 'transport', 'personal', 'f
 
 
 def validate_document(document):
-    if not isinstance(document, dict) or document.get('version') != 1:
-        raise ValueError('Unsupported budget document; expected version 1.')
+    if not isinstance(document, dict) or document.get('version') not in (1, 2):
+        raise ValueError('Unsupported budget document; expected version 1 or 2.')
+    ranged = document['version'] == 2
+    if ranged and document.get('incomeRange') != {'min': 1500, 'max': 2100}:
+        raise ValueError('Expected income range is 1500–2100 per month.')
     for field in ('name', 'title'):
         value = document.get(field)
         if not isinstance(value, str) or not value.strip() or len(value) > 100:
@@ -18,12 +21,16 @@ def validate_document(document):
     months = document.get('months')
     if not isinstance(months, list) or len(months) != 12:
         raise ValueError('Complete all 12 monthly budgets.')
-    clean = {'version': 1, 'name': document['name'].strip(), 'title': document['title'].strip(), 'months': []}
+    clean = {'version': document['version'], 'name': document['name'].strip(), 'title': document['title'].strip(), 'months': []}
+    if ranged:
+        clean['incomeRange'] = {'min': 1500, 'max': 2100}
     for index, month in enumerate(months, 1):
         if not isinstance(month, dict):
             raise ValueError(f'Month {index}: invalid budget.')
         row = {}
         for field in CATEGORIES:
+            if ranged and field == 'income':
+                continue
             value = month.get(field)
             if isinstance(value, bool) or not isinstance(value, (int, float)) or not math.isfinite(value) or not 0 <= value <= 100000:
                 raise ValueError(f'Month {index}: enter {field} between 0 and 100000.')
