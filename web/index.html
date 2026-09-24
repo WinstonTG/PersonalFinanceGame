@@ -4,19 +4,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#081b1a">
-    <title>Money Moves — Personal Finance Game</title>
+    <title>Personal Finance Game</title>
     <link rel="stylesheet" href="./styles.css">
   </head>
   <body>
     <main class="shell">
       <header class="topbar">
-        <a class="brand" href="./">MONEY <span>MOVES</span></a>
-        <div class="topbar-note"><span class="status-dot"></span> Year one simulator</div>
+        <a class="brand" href="./">PERSONAL <span>FINANCE GAME</span></a>
+        <div class="topbar-note">Simulator</div>
       </header>
       <section class="hero">
-        <div class="eyebrow">YOUR FIRST YEAR · 12 MONTHS</div>
-        <h1>Make your money<br><em>move.</em></h1>
-        <p class="hero-copy">You start with $3,000 in the bank. Build a plan that protects your future without forgetting to live a little.</p>
+        <div class="eyebrow">12 MONTHS</div>
+        <h1>Run a one year plan.</h1>
+        <p class="hero-copy">Set one monthly auto-invest amount and twelve months of fun spending. Bills come out first, then investing, then fun.</p>
         <div class="starting-strip"><span>STARTING SAVINGS</span><strong>$3,000</strong><span class="strip-divider"></span><span>MONTHLY BASICS</span><strong>$1,400</strong></div>
       </section>
 
@@ -29,19 +29,19 @@
           <div class="plan-meta">
             <label>PLAN NAME<input id="plan-name" type="text" placeholder="e.g. Balanced start" maxlength="40"></label>
             <label>AUTO-INVEST / MONTH<input id="investment" type="number" value="150" min="0" max="500" step="10" aria-label="Monthly auto-investment"></label>
-            <div class="meta-note"><span class="mini-icon">↗</span> Locked until your final score</div>
+            <div class="meta-note">Locked all year</div>
           </div>
           <div id="months-grid" class="months-grid"></div>
           <div class="plan-footer">
-            <div><span class="footer-label">HINT</span><span class="hint">Around $150/month is a strong quality-of-life starting point.</span></div>
-            <button class="primary-button" type="submit">Run my simulation <span>→</span></button>
+            <div></div>
+            <button class="primary-button" type="submit">Run the year</button>
           </div>
           <p id="form-error" class="error-message" hidden></p>
         </section>
       </form>
 
       <section id="results" class="results" hidden>
-        <div class="results-heading"><div><div class="eyebrow">SIMULATION COMPLETE</div><h2 id="result-plan-name">Your plan</h2></div><span id="event-count" class="event-pill"></span></div>
+        <div class="results-heading"><div><div class="eyebrow">RESULTS</div><h2 id="result-plan-name">Your plan</h2></div><span id="event-count" class="event-pill"></span></div>
         <div class="score-grid">
           <article class="score-card savings-card"><span class="card-label">ENDING SAVINGS</span><strong id="ending-savings">$0</strong><span class="card-detail">cash after 12 months</span></article>
           <article class="score-card investment-card"><span class="card-label">INVESTMENTS</span><strong id="investment-balance">$0</strong><span class="card-detail">locked + 0.8% monthly growth</span></article>
@@ -50,11 +50,11 @@
         </div>
         <div id="empty-state" hidden></div>
         <div class="table-panel">
-          <div class="table-heading"><div><span class="step">02</span><h2>Read your year</h2></div><p>Every month is a new tradeoff. Income varies, and luck has a seat at the table.</p></div>
+          <div class="table-heading"><div><span class="step">02</span><h2>Month by month</h2></div><p>Hours vary month to month. Bad events show in the notes column.</p></div>
           <div class="table-scroll"><table><thead><tr><th>MONTH</th><th>WORK</th><th>IN</th><th>INVESTED</th><th>FUN</th><th>SAVINGS</th><th>HAPPINESS</th><th>NOTES</th></tr></thead><tbody id="month-results"></tbody></table></div>
         </div>
       </section>
-      <footer><span>Money Moves / A personal finance game</span><span>Small choices. Big freedom.</span></footer>
+      <footer><span>Utah Fintech Club · Personal Finance Game</span><span></span></footer>
     </main>
     <script type="module" src="./app.js"></script>
   </body>
